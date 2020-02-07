@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -49,7 +51,7 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
     Spinner warehouseSpinner,rackNoSpinner;
     EditText uniqueId;
     Button addId;
-    String name;
+    String name,role;
     RecyclerView recyclerView;
     private Gson gson;
     private RequestQueue requestQueue;
@@ -58,6 +60,7 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
     ArrayList<String> rackArray;
     private static final int MY_PERMISSION_CAMERA=98;
     RelativeLayout lower;
+    LinearLayout headerLayout;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -66,10 +69,12 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
         setContentView(R.layout.activity_inventory_in);
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("User",MODE_PRIVATE);
         name=sharedPreferences.getString("User name","");
+        role=sharedPreferences.getString("Role","");
         if(getSupportActionBar()!=null){
             ActionBar actionBar = getSupportActionBar();
             actionBar.setTitle("Welcome, "+name);
         }
+        headerLayout=findViewById(R.id.headerLayout);
         warehouseSpinner = findViewById(R.id.warehouseSpinner);
         rackNoSpinner = findViewById(R.id.rackNumSpinner);
         uniqueId = findViewById(R.id.uniqueId);
@@ -83,6 +88,22 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
         warehouseArray.add("Select");
         rackArray = new ArrayList<>();
         rackArray.add("String");
+        if(role.equals("SuperAdmin")){
+            Button button = new Button(this);
+            button.setText("Inventory Out");
+            button.setBackgroundColor(Color.parseColor("#D4151A"));
+            button.setTextColor(Color.parseColor("#FFFFFF"));
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(10,10,10,10);
+            headerLayout.addView(button,layoutParams);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(InventoryIn.this,InventoryOut.class);
+                    startActivity(intent);
+                }
+            });
+        }
         fetchPosts();
         warehouseSpinner.setOnItemSelectedListener(this);
         uniqueId.setOnClickListener(new View.OnClickListener() {
