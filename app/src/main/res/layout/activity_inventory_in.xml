@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".InventoryIn">
 
     <TextView
@@ -103,7 +104,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
-                android:enabled="false"
                 android:id="@+id/uniqueId"
                 android:hint="Product UID"/>
         </LinearLayout>
@@ -122,6 +122,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/mainCardView"
+        android:id="@+id/lowerLayout"
+        android:visibility="invisible"
+
         >
 
     <LinearLayout
@@ -168,18 +171,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/recyclerView"
-        android:layout_below="@id/horizontalLayout"/>
+        android:layout_below="@id/horizontalLayout"
+        android:layout_marginBottom="50dp"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <Button
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_file_upload_black_24dp"
-        android:layout_above="@id/recyclerView"/>
+        android:background="@color/colorAccent"
+        android:text="Upload"
+        android:textColor="#ffffff"
+        />
     </RelativeLayout>
 
 </RelativeLayout>
