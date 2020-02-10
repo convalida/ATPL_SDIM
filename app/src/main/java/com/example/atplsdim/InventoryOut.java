@@ -1,5 +1,6 @@
 package com.example.atplsdim;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 public class InventoryOut extends AppCompatActivity {
@@ -21,6 +23,8 @@ public class InventoryOut extends AppCompatActivity {
     Button addProduct, uploadData;
     Spinner thirdParty, pickupPerson;
     private static final int MY_PERMISSION_CAMERA=98;
+    LinearLayout linearLayout;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION=99;
 
 
     @Override
@@ -39,7 +43,10 @@ public class InventoryOut extends AppCompatActivity {
         addProduct=findViewById(R.id.addProduct);
         uploadData=findViewById(R.id.uploadData);
         thirdParty=findViewById(R.id.thirdPartySpinner);
+        linearLayout=findViewById(R.id.verticalLinearLayout);
         pickupPerson=findViewById(R.id.pickupPersonSpinner);
+
+
         
         productId.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +54,11 @@ public class InventoryOut extends AppCompatActivity {
                 checkCameraPermission();
             }
         });
+        Intent intent = getIntent();
+        if(intent.getStringExtra("ScanResultOut")!=null){
+            linearLayout.setVisibility(View.VISIBLE);
+            productId.setFocusable(false);
+        }
     }
 
     private boolean checkCameraPermission() {
@@ -62,8 +74,10 @@ public class InventoryOut extends AppCompatActivity {
         }
         else {
             Intent intent=new Intent(InventoryOut.this,ScannerActivity.class);
+            intent.putExtra("Scanner Out","outScan");
             startActivity(intent);
             return true;
         }
     }
+
 }

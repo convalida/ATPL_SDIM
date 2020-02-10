@@ -57,6 +57,7 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
     private RequestQueue requestQueue;
     private static final String TAG = "InventoryIn";
     ArrayList<String> warehouseArray;
+    ArrayList<String> warehouseIdArray;
     ArrayList<String> rackArray;
     private static final int MY_PERMISSION_CAMERA=98;
     RelativeLayout lower;
@@ -142,7 +143,7 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
     }
 
     private void fetchPosts() {
-        final String MAIN=Constants.BASE_URL+"GetWarehoueDetails";
+        final String MAIN=Constants.BASE_URL+"GetWarehouseDetails";
         Log.e(TAG, "Url is: "+MAIN);
         StringRequest stringRequest = new StringRequest(Request.Method.GET,MAIN,onPostsLoaded,onPostsError);
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
@@ -253,6 +254,7 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
         protected ArrayList<String> doInBackground(String... response) {
             try {
                 warehouseArray =new ArrayList<>();
+                warehouseIdArray = new ArrayList<>();
                 warehouseArray.add("Select");
                 JSONObject jsonObject = new JSONObject(response[0]);
                 JSONArray warehouseDetails = jsonObject.getJSONArray("AllWarehouseDetails");
@@ -267,6 +269,7 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
                         String rackName = jsonObje.getString("RackName");
                     }**/
                     warehouseArray.add(name);
+                 //   warehouseIdArray
                 }
                 Log.e(TAG, "Warehouse array is: "+warehouseArray);
             } catch (JSONException e) {

@@ -67,8 +67,21 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         }
         else{
           //  new CheckUniqueId().execute();
-            checkUID(scannedResult);
+            if(getIntent().getStringExtra("Scanner Out")!=null){
+                checkOutUID(scannedResult);
+            }
+            else {
+                checkUID(scannedResult);
+            }
         }
+    }
+
+    private void checkOutUID(String scannedResult) {
+        final String urlOut=Constants.BASE_URL+"ExistUID?UniqueSku="+scannedResult+"&type=false";
+        Log.e(TAG,"Url is "+urlOut);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET,urlOut,onPostsOutLoaded,onPostsOutError);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.add(stringRequest);
     }
 
     private void checkUID(final String scannedResult) {
@@ -130,6 +143,23 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         }
     };
 
+    Response.Listener<String> onPostsOutLoaded = new Response.Listener<String>() {
+        @Override
+        public void onResponse(String response) {
+      Log.e(TAG,"Response: "+response);
+      CheckUniqueOutId checkUniqueOutId = new CheckUniqueOutId();
+      checkUniqueOutId.execute(response);
+        }
+    };
+
+    Response.ErrorListener onPostsOutError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+      Log.e(TAG,"Error is: "+error.toString());
+      Toast.makeText(getApplicationContext(),"Error is: "+error.toString(),Toast.LENGTH_LONG).show();
+        }
+    };
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager= (ConnectivityManager) this.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo=connectivityManager.getActiveNetworkInfo();
@@ -139,6 +169,55 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
     public void onPause(){
         super.onPause();
         zXingScannerView.stopCamera();
+    }
+
+    private class CheckUniqueOutId extends AsyncTask<String,Void,Void>{
+
+        @Override
+        protected Void doInBackground(String... response) {
+            try {
+                JSONObject jsonObject = new JSONObject(response[0]);
+                String message = jsonObject.getString("Message");
+                String resultCode = jsonObject.getString("ResultCode");
+                SharedPreferences sharedPreferences = getSharedPreferences("UniqueIdResponse",MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("ResultCodeOut",resultCode);
+                editor.putString("MessageOut",message);
+                editor.apply();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        protected void onPostExecute(Void result){
+            super.onPostExecute(result);
+            String resultCode, message;
+            SharedPreferences sharedPreferences = getSharedPreferences("UniqueIdResponse",MODE_PRIVATE);
+            resultCode=sharedPreferences.getString("ResultCodeOut","");
+            message=sharedPreferences.getString("MessageOut","");
+            if(resultCode.equals("0")||resultCode.equals("2")){
+                new AlertDialog.Builder(ScannerActivity.this)
+                        .setMessage(message)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                Intent intent = new Intent(ScannerActivity.this,InventoryOut.class);
+                                startActivity(intent);
+                            }
+                        })
+                        .setCancelable(true)
+                        .create()
+                        .show();
+
+            }
+            else if(resultCode.equals("1")){
+                Intent intent = new Intent(ScannerActivity.this,InventoryOut.class);
+                intent.putExtra("ScanResultOut","Successful");
+                startActivity(intent);
+            }
+
+        }
     }
 
     private  class CheckUniqueId extends AsyncTask<String,Void,Void>{
