@@ -209,13 +209,24 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
         if(selectedItem!="Select"){
            int position = warehouseSpinner.getSelectedItemPosition();
             Log.e(TAG,"Position of warehouse: "+position);
+           String warehouseId = warehouseIdArray.get(position);
+           Log.e(TAG, "Warehouse id is: "+warehouseId);
+           callRackList(warehouseId);
            // getRackNoDetails(position);
-            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Position",MODE_PRIVATE);
+         /**   SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Position",MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("RackPosition",String.valueOf(position));
+            editor.putString("RackPosition",String.valueOf(position));**/
          //   getRackDetails();
         }
 
+    }
+
+    private void callRackList(String warehouseId){
+        final String url = Constants.BASE_URL+"GetWarehoueRackDetails?WarehouseID="+warehouseId;
+        Log.e(TAG,"Rack url is : "+url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET,url,onRackPostsLoaded,onRackPostsError);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.add(stringRequest);
     }
 
     private void getRackDetails() {
@@ -256,6 +267,7 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
                 warehouseArray =new ArrayList<>();
                 warehouseIdArray = new ArrayList<>();
                 warehouseArray.add("Select");
+                warehouseIdArray.add("0");
                 JSONObject jsonObject = new JSONObject(response[0]);
                 JSONArray warehouseDetails = jsonObject.getJSONArray("AllWarehouseDetails");
                 for(int i = 0; i<warehouseDetails.length();i++){
@@ -269,7 +281,7 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
                         String rackName = jsonObje.getString("RackName");
                     }**/
                     warehouseArray.add(name);
-                 //   warehouseIdArray
+                    warehouseIdArray.add(id);
                 }
                 Log.e(TAG, "Warehouse array is: "+warehouseArray);
             } catch (JSONException e) {
@@ -294,27 +306,28 @@ public class InventoryIn extends AppCompatActivity implements AdapterView.OnItem
             rackArray.add("Select");
             try {
                 JSONObject jsonObject = new JSONObject(response[0]);
-                JSONArray warehouseDetails = jsonObject.getJSONArray("AllWarehouseDetails");
-                for(int i = 0;i<warehouseDetails.length();i++){
-                    JSONObject jsonObj = warehouseDetails.getJSONObject(i);
-                    String id = jsonObj.getString("WarehouseId");
-                   /** String name = jsonObj.getString("WarehouseName");
-                    JSONArray rackArray = jsonObj.getJSONArray("RackNoDetails");
-                    for (int j=0;j<rackArray.length();j++){
-                        JSONObject jsonObje = rackArray.getJSONObject(j);
-                        String rackId = jsonObje.getString("RackId");
-                        String rackName = jsonObje.getString("RackName");
-                    }**/
-                   SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Position",MODE_PRIVATE);
+                JSONArray rackDetais = jsonObject.getJSONArray("Racknonumberdetails");
+                for(int i = 0;i<rackDetais.length();i++){
+                    JSONObject jsonObj = rackDetais.getJSONObject(i);
+                    String id = jsonObj.getString("RackId");
+                    String name = jsonObj.getString("RackName");
+                    rackArray.add(name);
+                    }
+               /**    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Position",MODE_PRIVATE);
                    String position = sharedPreferences.getString("Position","");
                    if(id.equals(position)){
 
-                    }
-                }
+                    }**/
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return null;
+            return rackArray;
+        }
+        protected void onPostExecute(ArrayList<String> result){
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(InventoryIn.this,R.layout.support_simple_spinner_dropdown_item,result);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            rackNoSpinner.setAdapter(adapter);
         }
     }
 
