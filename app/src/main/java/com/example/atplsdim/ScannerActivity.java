@@ -270,7 +270,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
             }
             else if(resultCode.equals("1")){
                 Intent intent = new Intent(ScannerActivity.this,InventoryIn.class);
-                intent.putExtra("Scan result","Successful");
+                intent.putExtra("Scan result",scannedResult);
                 startActivity(intent);
             }
         }
