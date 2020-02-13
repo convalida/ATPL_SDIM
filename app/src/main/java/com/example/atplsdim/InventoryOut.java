@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,12 +39,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class InventoryOut extends AppCompatActivity {
-    String name;
+    String name, orderNum, referenceNum;
     EditText productId, orderNumber, referenceNumber;
     Button addProduct, uploadData;
     Spinner thirdParty, pickupPerson;
     private static final int MY_PERMISSION_CAMERA=98;
     LinearLayout linearLayout;
+    String selectedThirdParty,selectedPickupPerson;
     ScanFragment scanFragment;
     ArrayList<String> thirdPartyArray;
     RequestQueue requestQueue;
@@ -72,6 +74,8 @@ public class InventoryOut extends AppCompatActivity {
         linearLayout=findViewById(R.id.verticalLinearLayout);
         pickupPerson=findViewById(R.id.pickupPersonSpinner);
 
+        orderNum=orderNumber.getText().toString();
+        referenceNum=referenceNumber.getText().toString();
         thirdPartyArray = new ArrayList<>();
         thirdPartyArray.add("Select");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(InventoryOut.this,R.layout.support_simple_spinner_dropdown_item,thirdPartyArray);
@@ -80,6 +84,41 @@ public class InventoryOut extends AppCompatActivity {
 
         getThirdPartyName();
         getPickupPersonName();
+
+      uploadData.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+              Log.e(TAG,"Selected pickup person: "+selectedPickupPerson);
+              Log.e(TAG,"Selected Third party: "+selectedThirdParty);
+              if(!orderNum.equals("")&&referenceNum.equals("")&&!selectedThirdParty.equals("Select")&&!selectedPickupPerson.equals("Select")){
+                  //TODO upload btn functionality
+              }
+          }
+      });
+
+      thirdParty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+          @Override
+          public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+              selectedThirdParty=String.valueOf(thirdParty.getSelectedItem());
+          }
+
+          @Override
+          public void onNothingSelected(AdapterView<?> adapterView) {
+
+          }
+      });
+
+      pickupPerson.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+          @Override
+          public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+              selectedPickupPerson=String.valueOf(pickupPerson.getSelectedItem());
+          }
+
+          @Override
+          public void onNothingSelected(AdapterView<?> adapterView) {
+
+          }
+      });
 
        pickupPersonArray=new ArrayList<>();
         pickupPersonArray.add("Select");
