@@ -29,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,6 +79,7 @@ public class InventoryOut extends AppCompatActivity {
         thirdParty.setAdapter(adapter);
 
         getThirdPartyName();
+        getPickupPersonName();
 
        pickupPersonArray=new ArrayList<>();
         pickupPersonArray.add("Select");
@@ -126,8 +128,29 @@ public class InventoryOut extends AppCompatActivity {
     };
 
     private void getPickupPersonName(){
-
+        final String pickupPersonUrl=Constants.BASE_URL+"GetPickupPerson";
+        Log.e(TAG,"Pickup person url is: "+pickupPersonUrl);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET,pickupPersonUrl,onPickupPersonPostsLoaded,onPickuPersonPostsError);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.add(stringRequest);
     }
+
+    Response.Listener<String> onPickupPersonPostsLoaded = new Response.Listener<String>() {
+        @Override
+        public void onResponse(String response) {
+            Log.e(TAG,"Pickup person response: "+response);
+            GetPickUpPerson getPickUpPerson = new GetPickUpPerson();
+            getPickUpPerson.execute(response);
+        }
+    };
+
+    Response.ErrorListener onPickuPersonPostsError=new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Log.e(TAG,"Error is: "+error.toString());
+            Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_LONG).show();
+        }
+    };
 
     private boolean checkCameraPermission() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
@@ -177,6 +200,33 @@ public class InventoryOut extends AppCompatActivity {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(InventoryOut.this,R.layout.support_simple_spinner_dropdown_item,result);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             thirdParty.setAdapter(adapter);
+        }
+    }
+
+    private class GetPickUpPerson extends AsyncTask<String,Void,ArrayList<String>>{
+
+        @Override
+        protected ArrayList<String> doInBackground(String... response) {
+            pickupPersonArray = new ArrayList<>();
+            pickupPersonArray.add("Select");
+            try {
+                JSONObject jsonObject = new JSONObject(response[0]);
+                JSONArray pickupPersons = jsonObject.getJSONArray("PickupPersonDetails");
+                for(int i=0;i<pickupPersons.length();i++){
+                    JSONObject jsonObj = pickupPersons.getJSONObject(i);
+                    String pickupPersonName = jsonObj.getString("Name");
+                    pickupPersonArray.add(pickupPersonName);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return pickupPersonArray;
+        }
+
+        protected void onPostExecute(ArrayList<String> result){
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(InventoryOut.this,R.layout.support_simple_spinner_dropdown_item,result);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            pickupPerson.setAdapter(adapter);
         }
     }
 
