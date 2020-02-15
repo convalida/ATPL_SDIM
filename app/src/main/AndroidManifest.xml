@@ -16,12 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".InventoryOut"></activity>
-        <activity android:name=".ScannerActivity" />
+        <activity android:name=".InventoryOut"/>
+        <activity android:name=".ScannerActivity"
+            android:excludeFromRecents="true"/>
         <activity
             android:name=".InventoryIn"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:freezesText="true"/>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">

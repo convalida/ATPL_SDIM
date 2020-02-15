@@ -76,6 +76,7 @@ public class InventoryIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory_in);
+    //    Toast.makeText(InventoryIn.this,"onCreate called",Toast.LENGTH_LONG).show();
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("User",MODE_PRIVATE);
         name=sharedPreferences.getString("User name","");
         role=sharedPreferences.getString("Role","");
@@ -124,6 +125,14 @@ public class InventoryIn extends AppCompatActivity {
             });
         }
         fetchPosts();
+        if (savedInstanceState != null) {
+         //   Toast.makeText(InventoryIn.this,"savedInstanceState is not null",Toast.LENGTH_LONG).show();
+        Log.e(TAG,"savedInstanceState is not null");
+        }
+        else{
+           // Toast.makeText(InventoryIn.this,"SavedInstance state is null",Toast.LENGTH_LONG).show();
+            Log.e(TAG,"SavedInstance state is null");
+        }
 
 
        // warehouseSpinner.setOnItemSelectedListener(this);
@@ -195,7 +204,13 @@ public class InventoryIn extends AppCompatActivity {
             Log.e(TAG,"Selected warehouse is "+warehouseName);
             Log.e(TAG,"Selected rack is "+rackName);
             if(!warehouseName.equals("Select") && !rackName.equals("Select")){
-                lower.setVisibility(View.VISIBLE);
+                if(lower.getVisibility() ==View.INVISIBLE) {
+                    lower.setVisibility(View.VISIBLE);
+                    inventoryInList = new ArrayList<>();
+                }
+                else{
+                 //   inventoryInList =
+                }
                 createChildList(uniqueID,warehouseName,rackName);
             }
             SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -208,8 +223,40 @@ public class InventoryIn extends AppCompatActivity {
         }
     }
 
+  /**  public void onStart(){
+        super.onStart();
+        Toast.makeText(InventoryIn.this,"OnStart called",Toast.LENGTH_LONG).show();
+    }
+
+    public void onRestart(){
+        super.onRestart();
+        Toast.makeText(InventoryIn.this,"OnRestart called",Toast.LENGTH_LONG).show();
+
+    }
+
+    public void onResume(){
+        super.onResume();
+        Toast.makeText(InventoryIn.this,"OnResume called",Toast.LENGTH_LONG).show();
+
+    }
+
+    public void onPause(){
+        super.onPause();
+        Toast.makeText(InventoryIn.this,"OnPause called",Toast.LENGTH_LONG).show();
+    }
+
+    public void onStop(){
+        super.onStop();
+        Toast.makeText(InventoryIn.this,"OnStop called",Toast.LENGTH_LONG).show();
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        Toast.makeText(InventoryIn.this,"OnDestroy called",Toast.LENGTH_LONG).show();
+    }**/
+
     private void createChildList(String uniqueID, String warehouseName, String rackName) {
-        SharedPreferences sharedPreferences=null;
+    /**    SharedPreferences sharedPreferences=null;
         Gson gson=null;
         String json;
         // Log.e(TAG,"Warehouse "+warehouseSpinner.getSelectedItem().toString());
@@ -218,7 +265,7 @@ public class InventoryIn extends AppCompatActivity {
         if(list.equals("")) {
             // sharedPreferences = getApplicationContext().getSharedPreferences("InventoryInList", MODE_PRIVATE);
             inventoryInList=new ArrayList<>();
-        }
+        }**/
 
 
 
@@ -226,12 +273,18 @@ public class InventoryIn extends AppCompatActivity {
         hashMap.put("Warehouse",warehouseName);
         hashMap.put("RackNo",rackName);
         hashMap.put("productID",uniqueID);
-       // inventoryInList.add(hashMap);
-        SharedPreferences.Editor editor=sharedPreferences.edit();
+        //if(inventoryInList.isEmpty()){
+         //   inventoryInList=new ArrayList<>();
+        //}
+        inventoryInList.add(hashMap);
+
+        Log.e(TAG,"InventoryIn list: "+inventoryInList);
+
+     /**   SharedPreferences.Editor editor=sharedPreferences.edit();
         gson=new Gson();
          json=gson.toJson(inventoryInList);
         editor.putString("InList",json);
-        editor.apply();
+        editor.apply();**/
 
         Log.e(TAG, "InventoryIn Row"+String.valueOf(hashMap));
     }
@@ -265,10 +318,10 @@ public class InventoryIn extends AppCompatActivity {
             return false;
         }
         else {
-            Intent intent=new Intent(InventoryIn.this,ScannerActivity.class);
+          Intent intent=new Intent(InventoryIn.this,ScannerActivity.class);
             startActivity(intent);
-          //  frameLayout.setVisibility(View.INVISIBLE);
-           /** if(findViewById(R.id.fragment_container)!=null){
+       /**   //  frameLayout.setVisibility(View.INVISIBLE);
+            if(findViewById(R.id.fragment_container)!=null){
                 scanFragment= new ScanFragment();
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,scanFragment,null);
                 fragmentTransaction.commit();
@@ -276,6 +329,28 @@ public class InventoryIn extends AppCompatActivity {
 
             return true;
         }
+    }
+
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.e(TAG,"onRestoreInstanceStateCalled");
+        String stateSaved=savedInstanceState.getString("saved_state");
+        if(stateSaved==null){
+           // Toast.makeText(InventoryIn.this,"OnRestoreInstanceState: No state saved",Toast.LENGTH_LONG).show();
+        Log.e(TAG,"OnRestoreInstanceState: No state saved");
+        }
+        else{
+           // Toast.makeText(InventoryIn.this,"OnRestoreInstanceState: State saved: "+stateSaved,Toast.LENGTH_LONG).show();
+        Log.e(TAG,"OnRestoreInstanceState: State saved: "+stateSaved);
+        }
+    }
+
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        ArrayList<HashMap<String,String>> inList=inventoryInList;
+        outState.putString("saved_state","InList is saved");
+      //  Toast.makeText(getApplicationContext(),"OnSaveInstanceState: State saved: yes",Toast.LENGTH_LONG).show();
+   Log.e(TAG,"OnSaveInstanceState: State saved: yes");
     }
 
     private void fetchPosts() {

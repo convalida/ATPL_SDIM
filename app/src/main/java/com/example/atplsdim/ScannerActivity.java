@@ -43,6 +43,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         setContentView(R.layout.activity_scanner);
         zXingScannerView = new ZXingScannerView(this);
         setContentView(zXingScannerView);
+        this.setFinishOnTouchOutside(false);
         zXingScannerView.setResultHandler(this);
         zXingScannerView.startCamera();
         requestQueue = Volley.newRequestQueue(ScannerActivity.this);
@@ -272,6 +273,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 Intent intent = new Intent(ScannerActivity.this,InventoryIn.class);
                 intent.putExtra("Scan result",scannedResult);
                 startActivity(intent);
+              // onBackPressed();
             }
         }
     }

@@ -178,8 +178,7 @@ public class ScanFragment extends Fragment implements ZXingScannerView.ResultHan
                         .create()
                         .show();**/
                Toast.makeText(getActivity(),message,Toast.LENGTH_LONG).show();
-          //     FragmentManager fragmentManager=getFragmentManager().beginTransaction().remove(scanFragment).commit();
-
+               getFragmentManager().popBackStack();
             }
             else if(resultCode.equals("1")){
               //  Intent intent = new Intent(ScannerActivity.this,InventoryOut.class);
