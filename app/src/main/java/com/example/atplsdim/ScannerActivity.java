@@ -205,6 +205,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
 
                                 Intent intent = new Intent(ScannerActivity.this,InventoryOut.class);
                                 startActivity(intent);
+                              //  finish();
                             }
                         })
                         .setCancelable(true)
@@ -216,6 +217,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 Intent intent = new Intent(ScannerActivity.this,InventoryOut.class);
                 intent.putExtra("ScanResultOut","Successful");
                 startActivity(intent);
+             //   finish();
             }
 
         }
@@ -262,6 +264,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
 
                                      Intent intent = new Intent(ScannerActivity.this,InventoryIn.class);
                                      startActivity(intent);
+                                     finish();
                                 }
                             })
                             .setCancelable(true)
@@ -273,6 +276,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 Intent intent = new Intent(ScannerActivity.this,InventoryIn.class);
                 intent.putExtra("Scan result",scannedResult);
                 startActivity(intent);
+                finish();
               // onBackPressed();
             }
         }

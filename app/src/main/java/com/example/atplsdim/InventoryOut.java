@@ -8,13 +8,17 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -54,6 +58,7 @@ public class InventoryOut extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION=99;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,8 +87,8 @@ public class InventoryOut extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         thirdParty.setAdapter(adapter);
 
-        getThirdPartyName();
-        getPickupPersonName();
+    /**    getThirdPartyName();
+        getPickupPersonName();**/
 
       uploadData.setOnClickListener(new View.OnClickListener() {
           @Override
@@ -95,6 +100,30 @@ public class InventoryOut extends AppCompatActivity {
               }
           }
       });
+
+     /** orderNumber.setOnTouchListener(new View.OnTouchListener() {
+          @Override
+          public boolean onTouch(View view, MotionEvent motionEvent) {
+              view.onTouchEvent(motionEvent);
+              InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+              if (imm != null) {
+                  imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+              }
+              return true;
+          }
+      });
+
+      referenceNumber.setOnTouchListener(new View.OnTouchListener() {
+          @Override
+          public boolean onTouch(View view, MotionEvent motionEvent) {
+              view.onTouchEvent(motionEvent);
+              InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+              if (imm != null) {
+                  imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+              }
+              return true;
+          }
+      });**/
 
       thirdParty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
           @Override
@@ -139,6 +168,11 @@ public class InventoryOut extends AppCompatActivity {
             getThirdPartyName();
             getPickupPersonName();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void getThirdPartyName() {
